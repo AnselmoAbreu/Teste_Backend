@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TesteEfx.Models
+namespace Teste_Backend.Models
 { 
 
     public class Product

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using TesteEfx.Data;
-using TesteEfx.Models;
+using Teste_Backend.Data;
+using Teste_Backend.Models;
 
 namespace TesteEfx.AddControllers
 {

@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TesteEfx.Models;
-using TesteEfx.Data;
+using Teste_Backend.Models;
 
-namespace TesteEfx.Data
+namespace Teste_Backend.Data
 {
     public class DataContext : DbContext
     {
