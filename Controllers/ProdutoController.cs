@@ -1,20 +1,73 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TesteEfx.Data;
 using TesteEfx.Models;
 
 namespace TesteEfx.AddControllers
 {
+
     [ApiController]
     [Route("v1/Produtos")]
     public class ProdutoController : ControllerBase
     {
+        [HttpPost]
+        [Route("lerarquivo")]
+        public async Task<IActionResult> LerArquivoAsync(IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length <= 0)
+                    return BadRequest("Nenhum arquivo foi enviado.");
+
+                if (!file.FileName.ToUpper().EndsWith(".CSV"))
+                    return BadRequest("O arquivo enviado não é um arquivo CSV válido.");
+                var resultado = "";
+                int indice = 0;
+                using (var reader = new StreamReader(file.OpenReadStream()))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+
+                        string[] colunas = line.Split(',');
+                        indice = 0;
+                        var modelo = new Product();
+                        foreach (string column in colunas)
+                        {
+                            resultado = column.Replace("\"", "");
+                            if (indice == 0)
+                                modelo.Nome = resultado;
+                            if (indice == 1)
+                                modelo.Descricao = resultado;
+                            if (indice == 2)
+                                modelo.Preco = Convert.ToDecimal(resultado);
+                            if (indice == 3)
+                                modelo.Estoque = Convert.ToInt32(resultado);
+                            indice++;
+                        }
+                        if (modelo != null)
+                        {
+                            DataContext dataContext = new DataContext("Database");
+                            dataContext.Products.Add(modelo);
+                            await dataContext.SaveChangesAsync();
+                        }
+                    }
+                }
+
+                return Ok("Dados gravados com sucesso.");
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
 
         [HttpPost]
         [Route("")]
@@ -79,56 +132,5 @@ namespace TesteEfx.AddControllers
 
         }
 
-        [HttpPost]
-        [Route("lerarquivo")]
-        public IActionResult LerArquivo(IFormFile file)
-        {
-            try
-            {
-                if (file == null || file.Length <= 0)
-                    return BadRequest("Nenhum arquivo foi enviado.");
-
-                if (!file.FileName.ToUpper().EndsWith(".CSV"))
-                    return BadRequest("O arquivo enviado não é um arquivo CSV válido.");
-                var resultado = "";
-                int indice = 0;
-                using (var reader = new StreamReader(file.OpenReadStream()))
-                {
-                    while (!reader.EndOfStream)
-                    {
-                        var line = reader.ReadLine();
-
-                        string[] colunas = line.Split(',');
-                        indice = 0;
-                        var modelo = new Product();
-                        foreach (string column in colunas)
-                        {
-                            resultado = column.Replace("\"", "");
-                            if (indice == 0)
-                                modelo.Nome = resultado;
-                            if (indice == 1)
-                                modelo.Descricao = resultado;
-                            if (indice == 2)
-                                modelo.Preco = Convert.ToDecimal(resultado);
-                            if (indice == 3)
-                                modelo.Estoque = Convert.ToInt32(resultado);
-                            indice++;
-                        }
-                        if (modelo != null)
-                        {
-                            //return Post(modelo);
-                        }
-                    }
-                }
-
-                return Ok("Dados gravados com sucesso.");
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
     }
-
 }
