@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,7 +100,8 @@ namespace TesteEfx.AddControllers
         public async Task<ActionResult<List<Product>>> GetById([FromServices] DataContext context, int id)
         {
             var produtos = await context.Products.AsNoTracking().Where(x => x.id == id).ToListAsync();
-            return produtos;
+            var json = JsonConvert.SerializeObject(produtos);
+            return Content(json, "application/json");
         }
 
         [HttpGet]
