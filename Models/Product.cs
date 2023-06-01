@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Teste_Backend.Models
-{ 
+{
 
     public class Product
     {
@@ -10,16 +10,12 @@ namespace Teste_Backend.Models
 
         public int id { get; set; }
 
-        [Required(ErrorMessage = "Este campo é obrigatório")]
         public string Nome { get; set; }
 
-        [Required(ErrorMessage = "Este campo é obrigatório")]
         public string Descricao { get; set; }
 
-        [Required(ErrorMessage = "Este campo é obrigatório")]
         public decimal Preco { get; set; }
 
-        [Required(ErrorMessage = "Este campo é obrigatório")]
         public int Estoque { get; set; }
     }
 }
